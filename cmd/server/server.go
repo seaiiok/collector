@@ -19,7 +19,7 @@ func main() {
 
 		})
 
-		svr.OnRecvMessage(func(conn *snet.Connection, msg snet.Package) {
+		svr.OnRecvMessage(func(conn *snet.Connection, msg []byte) {
 			fmt.Println(msg)
 			conn.OnSendMsg(msg)
 		})
