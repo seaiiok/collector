@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package api;
+
+message msg {
+  int32 cmd = 1;
+  string file=2;
+  string md5 =3;
+  bytes msg=4;
+}

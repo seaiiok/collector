@@ -1,0 +1,10 @@
+{
+    "confile": "./logcollect.json",
+    "_comment": "host: server host = null; client host = server IP",
+    "host": "",
+    "port": "496",
+    "apptitle": "MES Collect",
+    "apptip": "MES Collect-.Zip",
+    "localcache": "./localcache",
+    "collectroot": "./logcollect/test/zip"
+}

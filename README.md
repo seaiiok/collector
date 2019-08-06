@@ -6,6 +6,7 @@
 
 ### 服务器 sql server 2012
 
+### 采集器配置文件目录位置： "/configs/logcollect.json"
 
 ### /cmd
 该项目的主要应用。
