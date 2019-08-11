@@ -1,68 +1,24 @@
-=========================== [2019-08-01] ===========================
+=========================== [2019-08-11] ===========================
 
-[INFO] 11:04:35.507007click start .app!
+[INFO] 22:49:20.188662 [odbc driver: driver={sql server};server=192.168.1.18;port=1433;uid=sa;pwd=kmtSoft12345678;database=ifixsvr;encrypt=disable]
 
-[INFO] 11:04:41.253516click stop .app!
+[INFO] 22:49:32.806881 [客户端连接: 192.168.1.2]
 
-[INFO] 11:04:43.323148click start .app!
+=========================== [2019-08-11] ===========================
 
-[INFO] 11:04:46.244189click quit .app!
+[INFO] 22:50:47.859527 [odbc driver: driver={sql server};server=192.168.1.18;port=1433;uid=sa;pwd=kmtSoft12345678;database=ifixsvr;encrypt=disable]
 
-=========================== [2019-08-01] ===========================
+[INFO] 22:50:54.574692 [客户端连接: 192.168.1.2]
 
-[INFO] 11:10:03.950769click start .app!
+=========================== [2019-08-11] ===========================
 
-[INFO] 11:10:07.435543click stop .app!
+[INFO] 22:53:20.921640 [odbc driver: driver={sql server};server=192.168.1.18;port=1433;uid=sa;pwd=kmtSoft12345678;database=ifixsvr;encrypt=disable]
 
-[INFO] 11:10:08.805264click start .app!
+[INFO] 22:53:36.995848 [客户端连接: 192.168.1.2]
 
-[INFO] 11:10:10.941376click quit .app!
+=========================== [2019-08-11] ===========================
 
-=========================== [2019-08-01] ===========================
+[INFO] 22:54:56.384931 [odbc driver: driver={sql server};server=192.168.1.18;port=1433;uid=sa;pwd=kmtSoft12345678;database=ifixsvr;encrypt=disable]
 
-[INFO] 11:11:04.517215 click start .app!
-
-[INFO] 11:11:08.778306 click stop .app!
-
-[INFO] 11:11:11.423588 click quit .app!
-
-=========================== [2019-08-01] ===========================
-
-[INFO] 11:18:35.474629 app click start
-
-[INFO] 11:18:44.669977 app click quit
-
-=========================== [2019-08-01] ===========================
-
-[INFO] 11:20:54.198450 app click start
-
-[INFO] 11:21:03.213944 app click quit
-
-=========================== [2019-08-01] ===========================
-
-[INFO] 11:21:12.539671 app click start
-
-[INFO] 11:22:01.301670 app click stop
-
-[INFO] 11:22:09.662565 app click quit
-
-=========================== [2019-08-01] ===========================
-
-[INFO] 11:37:51.205421 app init
-
-[INFO] 11:37:51.205421 app click start
-
-[INFO] 11:37:52.742936 app click stop
-
-[INFO] 11:37:54.160443 app click start
-
-[INFO] 11:37:56.108405 app click quit
-
-=========================== [2019-08-01] ===========================
-
-[INFO] 12:21:23.824522 app init
-
-[INFO] 12:21:23.824522 app click start
-
-[INFO] 12:21:27.942173 app click quit
+[INFO] 22:55:23.573907 [客户端连接: 192.168.1.18]
 

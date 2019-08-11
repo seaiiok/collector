@@ -2,12 +2,12 @@ package main
 
 import (
 	"collector/internal/app/appclient"
-	"collector/pkg/cache"
-	"collector/pkg/config"
+	"collector/internal/pkg/config"
+	"collector/internal/pkg/log"
 	"collector/pkg/global"
-	"collector/pkg/logger"
 	"errors"
 	"fmt"
+	"gcom/gtools/gbolt"
 	"gcom/gwin"
 	"io/ioutil"
 	"os"
@@ -16,11 +16,11 @@ import (
 
 const (
 	logroot        = "./log"
-	loglevel       = logger.LOGALL
+	loglevel       = 0
 	cachefile      = "./cache"
-	cachebucket    = "db"
+	cachedb        = "db"
 	configfile     = "./configs/collector.json"
-	apppid         = "mescollectclient.pid"
+	apppid         = "mescollectserver.pid"
 	messagecaption = "程序已经启动!"
 )
 
@@ -60,8 +60,7 @@ func procExsit(tmpDir string) (err error) {
 }
 
 func main() {
-
-	app := appclient.New(logger.New(logroot, loglevel), cache.New(cachefile, cachebucket), config.New(configfile))
-	app.Serve()
+	app := appclient.New(config.New(configfile), gbolt.New(cachefile, cachedb), log.New(logroot, loglevel))
 	app.Run()
+	select {}
 }

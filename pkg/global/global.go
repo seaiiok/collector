@@ -5,10 +5,13 @@ const (
 	SEP = "|"
 
 	//FILENOTREAD 扫描到一个新文件
-	FILENOTREAD = "not read"
+	FILENOTREAD = "file not read"
+
+	//FILENOTREAD 扫描到一个新文件
+	FILEREADFAILED = "file read failed"
 
 	//FILEREADED 已经读取的文件
-	FILEREADED = "read finish"
+	FILEREADFINISH = " file read finish"
 
 	//CACHEPATH 路径
 	CACHEPATH = "./cache"

@@ -21,11 +21,14 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type Msg struct {
-	Cmd                  *Commands   `protobuf:"bytes,1,opt,name=cmd,proto3" json:"cmd,omitempty"`
-	Msg                  []*Messages `protobuf:"bytes,2,rep,name=msg,proto3" json:"msg,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
+	Cmd                  int32    `protobuf:"varint,1,opt,name=cmd,proto3" json:"cmd,omitempty"`
+	Ip                   string   `protobuf:"bytes,2,opt,name=ip,proto3" json:"ip,omitempty"`
+	File                 string   `protobuf:"bytes,3,opt,name=file,proto3" json:"file,omitempty"`
+	Md5                  string   `protobuf:"bytes,4,opt,name=md5,proto3" json:"md5,omitempty"`
+	Msg                  []byte   `protobuf:"bytes,5,opt,name=msg,proto3" json:"msg,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *Msg) Reset()         { *m = Msg{} }
@@ -53,159 +56,55 @@ func (m *Msg) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Msg proto.InternalMessageInfo
 
-func (m *Msg) GetCmd() *Commands {
+func (m *Msg) GetCmd() int32 {
 	if m != nil {
 		return m.Cmd
 	}
-	return nil
+	return 0
 }
 
-func (m *Msg) GetMsg() []*Messages {
+func (m *Msg) GetIp() string {
+	if m != nil {
+		return m.Ip
+	}
+	return ""
+}
+
+func (m *Msg) GetFile() string {
+	if m != nil {
+		return m.File
+	}
+	return ""
+}
+
+func (m *Msg) GetMd5() string {
+	if m != nil {
+		return m.Md5
+	}
+	return ""
+}
+
+func (m *Msg) GetMsg() []byte {
 	if m != nil {
 		return m.Msg
 	}
 	return nil
 }
 
-type Commands struct {
-	Command              int32    `protobuf:"varint,1,opt,name=command,proto3" json:"command,omitempty"`
-	Filepath             string   `protobuf:"bytes,2,opt,name=filepath,proto3" json:"filepath,omitempty"`
-	Md5                  int64    `protobuf:"varint,3,opt,name=md5,proto3" json:"md5,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Commands) Reset()         { *m = Commands{} }
-func (m *Commands) String() string { return proto.CompactTextString(m) }
-func (*Commands) ProtoMessage()    {}
-func (*Commands) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c06e4cca6c2cc899, []int{1}
-}
-
-func (m *Commands) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Commands.Unmarshal(m, b)
-}
-func (m *Commands) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Commands.Marshal(b, m, deterministic)
-}
-func (m *Commands) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Commands.Merge(m, src)
-}
-func (m *Commands) XXX_Size() int {
-	return xxx_messageInfo_Commands.Size(m)
-}
-func (m *Commands) XXX_DiscardUnknown() {
-	xxx_messageInfo_Commands.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Commands proto.InternalMessageInfo
-
-func (m *Commands) GetCommand() int32 {
-	if m != nil {
-		return m.Command
-	}
-	return 0
-}
-
-func (m *Commands) GetFilepath() string {
-	if m != nil {
-		return m.Filepath
-	}
-	return ""
-}
-
-func (m *Commands) GetMd5() int64 {
-	if m != nil {
-		return m.Md5
-	}
-	return 0
-}
-
-type Messages struct {
-	Field1               string   `protobuf:"bytes,1,opt,name=field1,proto3" json:"field1,omitempty"`
-	Field2               string   `protobuf:"bytes,2,opt,name=field2,proto3" json:"field2,omitempty"`
-	Field3               string   `protobuf:"bytes,3,opt,name=field3,proto3" json:"field3,omitempty"`
-	Field4               string   `protobuf:"bytes,4,opt,name=field4,proto3" json:"field4,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Messages) Reset()         { *m = Messages{} }
-func (m *Messages) String() string { return proto.CompactTextString(m) }
-func (*Messages) ProtoMessage()    {}
-func (*Messages) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c06e4cca6c2cc899, []int{2}
-}
-
-func (m *Messages) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Messages.Unmarshal(m, b)
-}
-func (m *Messages) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Messages.Marshal(b, m, deterministic)
-}
-func (m *Messages) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Messages.Merge(m, src)
-}
-func (m *Messages) XXX_Size() int {
-	return xxx_messageInfo_Messages.Size(m)
-}
-func (m *Messages) XXX_DiscardUnknown() {
-	xxx_messageInfo_Messages.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Messages proto.InternalMessageInfo
-
-func (m *Messages) GetField1() string {
-	if m != nil {
-		return m.Field1
-	}
-	return ""
-}
-
-func (m *Messages) GetField2() string {
-	if m != nil {
-		return m.Field2
-	}
-	return ""
-}
-
-func (m *Messages) GetField3() string {
-	if m != nil {
-		return m.Field3
-	}
-	return ""
-}
-
-func (m *Messages) GetField4() string {
-	if m != nil {
-		return m.Field4
-	}
-	return ""
-}
-
 func init() {
 	proto.RegisterType((*Msg)(nil), "api.msg")
-	proto.RegisterType((*Commands)(nil), "api.commands")
-	proto.RegisterType((*Messages)(nil), "api.messages")
 }
 
 func init() { proto.RegisterFile("msg.proto", fileDescriptor_c06e4cca6c2cc899) }
 
 var fileDescriptor_c06e4cca6c2cc899 = []byte{
-	// 196 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x4c, 0x90, 0x41, 0x4e, 0xc6, 0x20,
-	0x10, 0x85, 0x43, 0xd1, 0xda, 0x8e, 0x31, 0x31, 0x2c, 0x0c, 0x71, 0x23, 0xe9, 0xaa, 0xab, 0x26,
-	0xb6, 0xf5, 0x0c, 0xee, 0xb9, 0x01, 0x16, 0x8a, 0x98, 0x8e, 0x25, 0xd2, 0xfb, 0xc7, 0x40, 0x80,
-	0xfc, 0xbb, 0x79, 0xdf, 0x3c, 0x3e, 0x92, 0x81, 0x1e, 0x83, 0x9d, 0xfc, 0xdf, 0x79, 0x9d, 0x8c,
-	0x2a, 0xef, 0x86, 0x4f, 0xa0, 0x18, 0x2c, 0x7b, 0x03, 0xba, 0xa1, 0xe6, 0x44, 0x90, 0xf1, 0x71,
-	0x7e, 0x9a, 0x94, 0x77, 0xd3, 0x76, 0x22, 0xaa, 0x5f, 0x1d, 0x64, 0xdc, 0xc4, 0x02, 0x06, 0xcb,
-	0x1b, 0x41, 0x6b, 0x01, 0x4d, 0x08, 0xca, 0x9a, 0x20, 0xe3, 0x66, 0x90, 0xd0, 0x95, 0x17, 0x8c,
-	0xc3, 0x43, 0x9e, 0x93, 0xf1, 0x5e, 0x96, 0xc8, 0x5e, 0xa1, 0xdb, 0xdd, 0x61, 0xbc, 0xba, 0xbe,
-	0x79, 0x23, 0xc8, 0xd8, 0xcb, 0x9a, 0xd9, 0x33, 0x50, 0xd4, 0x1f, 0x9c, 0x0a, 0x32, 0x52, 0x19,
-	0xc7, 0xe1, 0x07, 0xba, 0xf2, 0x09, 0x7b, 0x81, 0x76, 0x77, 0xe6, 0xd0, 0xef, 0x49, 0xd9, 0xcb,
-	0x9c, 0x2a, 0x9f, 0xb3, 0x2f, 0xa7, 0xca, 0x97, 0x24, 0x2c, 0x7c, 0xa9, 0x7c, 0xe5, 0x77, 0x37,
-	0x7c, 0xfd, 0x6a, 0xd3, 0x51, 0x96, 0xff, 0x00, 0x00, 0x00, 0xff, 0xff, 0x23, 0x53, 0x67, 0x66,
-	0x21, 0x01, 0x00, 0x00,
+	// 121 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xcc, 0x2d, 0x4e, 0xd7,
+	0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x4e, 0x2c, 0xc8, 0x54, 0x8a, 0xe7, 0x62, 0xce, 0x2d,
+	0x4e, 0x17, 0x12, 0xe0, 0x62, 0x4e, 0xce, 0x4d, 0x91, 0x60, 0x54, 0x60, 0xd4, 0x60, 0x0d, 0x02,
+	0x31, 0x85, 0xf8, 0xb8, 0x98, 0x32, 0x0b, 0x24, 0x98, 0x14, 0x18, 0x35, 0x38, 0x83, 0x98, 0x32,
+	0x0b, 0x84, 0x84, 0xb8, 0x58, 0xd2, 0x32, 0x73, 0x52, 0x25, 0x98, 0xc1, 0x22, 0x60, 0x36, 0x48,
+	0x57, 0x6e, 0x8a, 0xa9, 0x04, 0x0b, 0x58, 0x08, 0xc4, 0x04, 0x8b, 0x14, 0xa7, 0x4b, 0xb0, 0x2a,
+	0x30, 0x6a, 0xf0, 0x04, 0x81, 0x98, 0x49, 0x6c, 0x60, 0xcb, 0x8c, 0x01, 0x01, 0x00, 0x00, 0xff,
+	0xff, 0xef, 0x13, 0x25, 0xbe, 0x79, 0x00, 0x00, 0x00,
 }

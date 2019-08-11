@@ -1,143 +1,150 @@
 package appclient
 
 import (
-	"collector/assets/ico"
-	"collector/internal/interfaces"
-	"collector/internal/pkg/producter/collectzip"
-	"context"
-	"gcom/gtools/systray"
-	"gcom/gwin"
-	"os/exec"
+	"collector/api"
+	"collector/pkg/interfaces"
+	"gcom/garchive"
+	"net"
+	"time"
+
+	"github.com/golang/protobuf/proto"
+	"snet/snet.v4/clients"
+	"snet/snet.v4/packet"
 )
 
-const (
-	apptitle = "MES Collect"
-	apptip   = "MES Collect-Zip"
-)
-
-type app struct {
-	ctx    context.Context
-	cancel context.CancelFunc
-
-	log       interfaces.ILog
-	app       interfaces.IApp
-	cache     interfaces.ICache
+type client struct {
 	config    interfaces.IConfig
 	producter interfaces.IProducter
+	cache     interfaces.ICache
+	log       interfaces.ILog
+}
+var netc interfaces.INetClient
+
+func (this *client) OnConnect(conn net.Conn) {
+	this.log.Info("连接到服务器:", conn.RemoteAddr().String())
 }
 
-func New(log interfaces.ILog, cache interfaces.ICache, config interfaces.IConfig) *app {
-	ctx, cancel := context.WithCancel(context.Background())
-	return &app{
-		log:    log,
-		ctx:    ctx,
-		cancel: cancel,
+func (this *client) OnDisConnect(conn net.Conn, reason string) {
+	this.log.Info("断开与服务器连接:", conn.RemoteAddr().String(), ",原因:", reason)
 
-		producter: collectzip.New(log, cache, config, nil),
-	}
-}
-
-//Run 程序运行
-func (this *app) Serve() {
-
-	go systray.Run(this.onReady, this.onExit)
-
-	//阻塞主程
-	this.listen()
-}
-
-//Run 程序运行
-func (this *app) Run() {
-	//TODO 配置更新 网络组件启动 文件扫描启动
-	
-	// 文件扫描启动
-	this.producter.Run()
-}
-
-//Run 程序运行
-func (this *app) Stop() {
-	//TODO 释放资源
-}
-
-//Run 程序退出
-func (this *app) Exit() {
-	//TODO 释放资源
-	this.cancel()
-}
-
-//Run 程序退出
-func (this *app) listen() {
-	for {
-		select {
-		case <-this.ctx.Done():
-			return
-		}
-	}
-}
-
-func (this *app) onReady() {
-
-	systray.SetIcon(ico.Data)
-	systray.SetTitle(apptitle)
-	systray.SetTooltip(apptip)
 	go func() {
-		//关于 ...
-		mAbout := systray.AddMenuItem("关于", "App About")
-		systray.AddSeparator()
+		for {
+			err := netc.Serve()
+			if err != nil {
+				time.Sleep(30 * time.Second)
+				continue
+			}
+			break
+		}
+	}()
+}
 
-		//启动 ...
-		mStart := systray.AddMenuItem("启动", "App Start")
-		systray.AddSeparator()
+func (this *client) OnRecvMessage(conn net.Conn, msg []byte) {
 
-		//停止 ...
-		mStop := systray.AddMenuItem("停止", "App Stop")
-		systray.AddSeparator()
+	m := &api.Msg{}
+	p := &packet.Package{}
 
-		//退出 ...
-		mQuit := systray.AddMenuItem("退出", "Quit")
+	err := proto.Unmarshal(msg, m)
+	if err != nil {
+		this.log.Error("proto unmarshal err:", err)
+		return
+	}
 
-		//设置初始状态
-		go func() {
-			this.log.Info("app init")
-			mStart.ClickedCh <- struct{}{}
-		}()
+	switch m.Cmd {
+	case 0:
 
+		this.producter.Set(m.File, []byte{1})
+
+	case 1:
 		for {
 			select {
-			case <-mQuit.ClickedCh:
-				result := gwin.MessageBox(apptitle, "确认退出程序吗", gwin.MB_OKCANCEL|gwin.MB_ICONWARNING)
-				if result == 1 {
-					this.log.Info("app click quit")
-					this.Stop()
-					systray.Quit()
+			case file := <-this.producter.OutQueue():
+				m.Cmd = 2
+				m.File = file
+
+				pm, err := proto.Marshal(m)
+				if err != nil {
+					this.log.Error("proto marshal err:", err)
+					this.producter.Set(m.File, []byte{1})
 					return
 				}
 
-			case <-mAbout.ClickedCh:
-				cmd := exec.Command("cmd", "/c start www.baidu.com")
-				if err := cmd.Start(); err != nil {
-					gwin.MessageBox(apptitle, err.Error(), gwin.MB_OK)
+				pp, err := p.Pack(pm)
+				if err != nil {
+					this.log.Error("pack err:", err)
+					this.producter.Set(m.File, []byte{1})
+					return
 				}
 
-			case <-mStart.ClickedCh:
-				this.log.Info("app click start")
-				this.Run()
-				mStart.Disable()
-				mStop.Enable()
-
-			case <-mStop.ClickedCh:
-				this.log.Info("app click stop")
-				this.Stop()
-				mStart.Enable()
-				mStop.Disable()
-
+				conn.Write(pp)
+			default:
+				time.Sleep(1 * time.Second)
 			}
 		}
-	}()
+
+	case 3:
+		b, md5, err := garchive.UnZip(m.File)
+		if err != nil {
+			this.log.Error("garchive unzip err:", err)
+			this.producter.Set(m.File, []byte{1})
+			return
+		}
+
+		m.Cmd = 4
+		m.Md5 = md5
+		m.Msg = b
+
+		pm, err := proto.Marshal(m)
+		if err != nil {
+			this.log.Error("proto marshal err:", err)
+			this.producter.Set(m.File, []byte{1})
+			return
+		}
+
+		pp, err := p.Pack(pm)
+		if err != nil {
+			this.log.Error("pack err:", err)
+			this.producter.Set(m.File, []byte{1})
+			return
+		}
+
+		conn.Write(pp)
+
+	case 5:
+		this.producter.Set(m.File, []byte{1, 1})
+	default:
+	}
 
 }
 
-func (this *app) onExit() {
-	//释放主程
-	this.app.Exit()
+func (this *client) OnSendMessage(conn net.Conn) {
+
+}
+
+
+func NewClient(config interfaces.IConfig, producter interfaces.IProducter, cache interfaces.ICache, log interfaces.ILog) *client {
+
+	c := &client{
+		config:    config,
+		producter: producter,
+		cache:     cache,
+		log:       log,
+	}
+
+	netc = snetclient.NewClient(config.Get("host"), config.Get("port"), c)
+
+	go func() {
+		for {
+			err := netc.Serve()
+			if err != nil {
+				time.Sleep(30 * time.Second)
+				continue
+			}
+			break
+		}
+	}()
+
+	producter.Run()
+
+	return c
 }

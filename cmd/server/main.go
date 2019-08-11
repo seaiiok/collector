@@ -2,10 +2,9 @@ package main
 
 import (
 	"collector/internal/app/appserver"
-	"collector/pkg/cache"
-	"collector/pkg/config"
+	"collector/internal/pkg/config"
+	"collector/internal/pkg/log"
 	"collector/pkg/global"
-	"collector/pkg/logger"
 	"errors"
 	"fmt"
 	"gcom/gwin"
@@ -16,7 +15,7 @@ import (
 
 const (
 	logroot        = "./log"
-	loglevel       = logger.LOGALL
+	loglevel       = 0
 	cachefile      = "./cache"
 	cachebucket    = "db"
 	configfile     = "./configs/collector.json"
@@ -60,8 +59,7 @@ func procExsit(tmpDir string) (err error) {
 }
 
 func main() {
-
-	app := appserver.New(logger.New(logroot, loglevel), cache.New(cachefile, cachebucket), config.New(configfile))
-	app.Serve()
+	app := appserver.New(config.New(configfile), log.New(logroot, loglevel))
 	app.Run()
+	select {}
 }

@@ -4,7 +4,8 @@ package api;
 
 message msg {
   int32 cmd = 1;
-  string file=2;
-  string md5 =3;
-  bytes msg=4;
+  string ip=2;
+  string file=3;
+  string md5 =4;
+  bytes msg=5;
 }
