@@ -24,7 +24,7 @@ func New(ctx context.Context, cancel context.CancelFunc, config interfaces.IConf
 		ctx:    ctx,
 		cancel: cancel,
 		config: config,
-		about:  app.New("./index.tpl"),
+		about:  app.New(),
 	}
 }
 

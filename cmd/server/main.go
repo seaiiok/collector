@@ -9,9 +9,9 @@ import (
 	"errors"
 	"fmt"
 	"gcom/gwin"
-	"io/ioutil"
-	"net/http"
-	_ "net/http/pprof"
+	"io/ioutil" 
+	// "net/http"
+	// _ "net/http/pprof"
 	"os"
 	"strconv"
 )
@@ -63,9 +63,9 @@ func procExsit(tmpDir string) (err error) {
 
 func main() {
 
-	go func() {
-		fmt.Println(http.ListenAndServe("localhost:6060", nil))
-	}()
+	// go func() {
+	// 	fmt.Println(http.ListenAndServe("localhost:6060", nil))
+	// }()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	app := appserver.New(config.New(configfile), log.New(logroot, loglevel))
