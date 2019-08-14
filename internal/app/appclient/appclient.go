@@ -3,6 +3,7 @@ package appclient
 import (
 	"collector/api"
 	"collector/pkg/interfaces"
+	"fmt"
 	"gcom/garchive"
 	"net"
 	"time"
@@ -18,6 +19,7 @@ type client struct {
 	cache     interfaces.ICache
 	log       interfaces.ILog
 }
+
 var netc interfaces.INetClient
 
 func (this *client) OnConnect(conn net.Conn) {
@@ -51,38 +53,47 @@ func (this *client) OnRecvMessage(conn net.Conn, msg []byte) {
 	}
 
 	switch m.Cmd {
-	case 0:
 
-		this.producter.Set(m.File, []byte{1})
-
-	case 1:
+	//请求1-文件基础信息
+	case 101:
 		for {
+			time.Sleep(5 * time.Second)
 			select {
 			case file := <-this.producter.OutQueue():
-				m.Cmd = 2
+
+				list, _ := this.cache.GetMap()
+				for k, v := range list {
+					fmt.Println(k, "---", v)
+				}
+				fmt.Println()
+				
+				m.Cmd = 101
 				m.File = file
 
 				pm, err := proto.Marshal(m)
 				if err != nil {
 					this.log.Error("proto marshal err:", err)
 					this.producter.Set(m.File, []byte{1})
-					return
+					continue
 				}
 
 				pp, err := p.Pack(pm)
 				if err != nil {
 					this.log.Error("pack err:", err)
 					this.producter.Set(m.File, []byte{1})
-					return
+					continue
 				}
 
 				conn.Write(pp)
+				return
 			default:
 				time.Sleep(1 * time.Second)
 			}
 		}
 
-	case 3:
+		//请求1-成功,请求2-发送文件完整信息
+	case 102:
+
 		b, md5, err := garchive.UnZip(m.File)
 		if err != nil {
 			this.log.Error("garchive unzip err:", err)
@@ -90,7 +101,7 @@ func (this *client) OnRecvMessage(conn net.Conn, msg []byte) {
 			return
 		}
 
-		m.Cmd = 4
+		m.Cmd = 102
 		m.Md5 = md5
 		m.Msg = b
 
@@ -110,8 +121,29 @@ func (this *client) OnRecvMessage(conn net.Conn, msg []byte) {
 
 		conn.Write(pp)
 
-	case 5:
+		//请求1-失败,继续
+	case 103:
+		this.producter.Set(m.File, []byte{1})
+		b := this.objectNext(m)
+		conn.Write(b)
+
+		//请求2-成功,继续
+	case 104:
 		this.producter.Set(m.File, []byte{1, 1})
+		b := this.objectNext(m)
+		conn.Write(b)
+
+		//请求2-失败,继续
+	case 105:
+		this.producter.Set(m.File, []byte{1})
+		b := this.objectNext(m)
+		conn.Write(b)
+
+		//请求1,2-拒绝处理,继续
+	case 106:
+		this.producter.Set(m.File, []byte{1, 1})
+		b := this.objectNext(m)
+		conn.Write(b)
 	default:
 	}
 
@@ -120,7 +152,6 @@ func (this *client) OnRecvMessage(conn net.Conn, msg []byte) {
 func (this *client) OnSendMessage(conn net.Conn) {
 
 }
-
 
 func NewClient(config interfaces.IConfig, producter interfaces.IProducter, cache interfaces.ICache, log interfaces.ILog) *client {
 

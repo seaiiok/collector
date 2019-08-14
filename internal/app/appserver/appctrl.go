@@ -51,3 +51,19 @@ func (this *server) objectFailed(pm *api.Msg) []byte {
 	}
 	return msg
 }
+
+func (this *server) objectNext(pm *api.Msg, cmd int32) []byte {
+	pack := &packet.Package{}
+	pm.Cmd = cmd
+	pm.Msg = []byte{}
+
+	b, err := proto.Marshal(pm)
+	if err != nil {
+		return []byte{}
+	}
+	msg, err := pack.Pack(b)
+	if err != nil {
+		return []byte{}
+	}
+	return msg
+}

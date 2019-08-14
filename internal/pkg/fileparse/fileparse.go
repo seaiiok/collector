@@ -1,64 +1,119 @@
 package fileparse
 
 import (
-	"archive/zip"
 	"bufio"
 	"bytes"
-	"fmt"
+	"context"
 	"gcom/gtools/gdb"
-	"io"
 	"os"
 	"strconv"
 	"time"
 )
 
-func Run() {
-	notFinishFile := fmt.Sprintf(`SELECT top 1 Files,MD5,Progress FROM [iFixsvr_JFOffline_info] WHERE Finish <> '1'`)
-	res, err := gdb.Querys(notFinishFile)
+const (
+	icount = 5000
+)
+
+func Run(ctx context.Context, root string) {
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				err := run(root)
+				if err != nil {
+					time.Sleep(10 * time.Second)
+					continue
+				}
+			}
+		}
+	}()
+}
+func run(root string) error {
+
+	res, err := gdb.Querys(sql_notfinishfile)
 	if err != nil {
-		fmt.Println("err1:", err)
+		return err
+	}
+
+	if len(res) != 1 {
+		time.Sleep(10 * time.Second)
+		return err
 	}
 
 	if len(res[0]) != 3 {
-		fmt.Println("结果:", len(res))
+		return err
 	}
-	file := res[0][0]
+
+	fileip := res[0][0]
+	filemd5 := res[0][1]
 	progress := res[0][2]
 	seek, err := strconv.ParseInt(progress, 10, 64)
 	if err != nil {
-		fmt.Println("err2:", err)
 		seek = 0
 	}
-	fmt.Println(file, seek)
+	updtime := time.Now().Format("2006-01-02 15:04:05")
+	file := root + fileip + "-" + filemd5 + ".txt"
 	rows, n, err := ParseRows(file, seek)
 
-	fmt.Println("----len rows", len(rows))
-	updateProgress := `UPDATE iFixsvr_JFOffline_info SET Progress = ?, Finish = ?, FinishDTime = ? WHERE (Files = ?)`
-
-	upseek := strconv.FormatInt(n, 10)
-	upfinish := "0"
-	if err == io.EOF {
-		upfinish = "1"
+	if err != nil {
+		return err
 	}
 
-	updtime := time.Now().Format("2006-01-02 15:04:05")
-	upfile := file
-	fmt.Println(upseek, upfinish, updtime, upfile)
-	upd := []string{upseek, upfinish, updtime, upfile}
+	var ct int64
+	for {
 
-	upds := make([][]string, 0)
+		irows := make([][]string, 0)
+		var i int64
+		for _, v := range rows[ct:] {
+			ct++
+			i++
+			nv := make([]string, 0)
+			nv = append(nv, filemd5)
+			nv = append(nv, v...)
+			nv = append(nv, updtime)
+			irows = append(irows, nv)
 
-	upds = append(upds, upd)
-	err = gdb.Updates(updateProgress, upds)
-	fmt.Println(err)
+			//限制插入数据量
+			if i >= icount {
+				break
+			}
+		}
+
+		err = gdb.Insertbulk(sql_insertinfo, irows)
+
+		if err != nil {
+			return err
+		}
+
+		upseek := strconv.FormatInt(ct, 10)
+		upfinish := "0"
+		if len(irows) == 0 || ct == n {
+			upfinish = "1"
+		}
+
+		upd := []string{upseek, upfinish, updtime, filemd5, fileip}
+
+		upds := make([][]string, 0)
+
+		upds = append(upds, upd)
+		err = gdb.Updates(sql_updateprogress, upds)
+
+		if upfinish == "1" {
+			return nil
+		}
+	}
+
 }
 
 func ParseFile(file string, seek int64) ([][]byte, int64, error) {
 	var lines int64
 	res := make([][]byte, 0)
-	f, err := os.OpenFile(file, os.O_RDONLY, 0744)
+
+	f, err := os.OpenFile(file, os.O_RDONLY, 0644)
 	if err != nil {
-		return nil, 0, nil
+		return res, 0, err
 	}
 
 	r := bufio.NewReader(f)
@@ -95,39 +150,4 @@ func ParseRows(file string, seek int64) ([][]string, int64, error) {
 		rows = append(rows, r)
 	}
 	return rows, n, err
-}
-
-func ParseFile1(path string, seek int64) ([][]byte, int64, error) {
-	var lines int64
-	rc, err := zip.OpenReader(path)
-	defer rc.Close()
-	bs := make([][]byte, 0)
-
-	if err != nil {
-		return bs, 0, err
-	}
-
-	for _, file := range rc.File {
-		f, err := file.Open()
-		if err != nil {
-			return bs, 0, err
-		}
-
-		r := bufio.NewReader(f)
-
-		scan := bufio.NewScanner(r)
-
-		scan.Split(bufio.ScanLines)
-
-		for scan.Scan() {
-			lines++
-			if lines > seek {
-				sb := bytes.TrimPrefix(scan.Bytes(), []byte{239, 187, 191})
-				bs = append(bs, sb)
-			}
-		}
-		err = scan.Err()
-		return bs, lines, err
-	}
-	return bs, 0, err
 }

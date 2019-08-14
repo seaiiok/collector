@@ -5,10 +5,13 @@ import (
 	"collector/internal/pkg/config"
 	"collector/internal/pkg/log"
 	"collector/pkg/global"
+	"context"
 	"errors"
 	"fmt"
 	"gcom/gwin"
 	"io/ioutil"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"strconv"
 )
@@ -19,7 +22,7 @@ const (
 	cachefile      = "./cache"
 	cachebucket    = "db"
 	configfile     = "./configs/collector.json"
-	apppid         = "mescollectclient.pid"
+	apppid         = "mescollectserver.pid"
 	messagecaption = "程序已经启动!"
 )
 
@@ -59,7 +62,12 @@ func procExsit(tmpDir string) (err error) {
 }
 
 func main() {
+
+	go func() {
+		fmt.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+
+	ctx, cancel := context.WithCancel(context.Background())
 	app := appserver.New(config.New(configfile), log.New(logroot, loglevel))
-	app.Run()
-	select {}
+	app.Run(ctx, cancel)
 }

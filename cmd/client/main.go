@@ -20,7 +20,7 @@ const (
 	cachefile      = "./cache"
 	cachedb        = "db"
 	configfile     = "./configs/collector.json"
-	apppid         = "mescollectserver.pid"
+	apppid         = "mescollectclient.pid"
 	messagecaption = "程序已经启动!"
 )
 

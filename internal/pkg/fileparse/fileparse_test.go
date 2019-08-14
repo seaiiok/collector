@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gcom/gtools/gdb"
 	"testing"
+	"time"
 
 	_ "github.com/alexbrainman/odbc"
 )
@@ -23,5 +24,11 @@ func TestFile(t *testing.T) {
 		t.Log("odbc init err:", err)
 	}
 
-	Run()
+	gdb.Exec(sql_createtable3)
+
+	time.Sleep(time.Second)
+	err = Run()
+
+	t.Log(err)
+
 }
