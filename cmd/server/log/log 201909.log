@@ -1,0 +1,22 @@
+=========================== [2019-09-02] ===========================
+
+[ERRS] 21:06:29.761791 [SQLDriverConnect: {08001} [Microsoft][ODBC SQL Server Driver][DBNETLIB]SQL Server 不存在或访问被拒绝
+{01000} [Microsoft][ODBC SQL Server Driver][DBNETLIB]ConnectionOpen (Connect()).
+{01S00} [Microsoft][ODBC SQL Server Driver]无效的连接字符串属性 ;this client service stop!]
+
+[ERRS] 21:06:29.761791 [odbc init err: SQLDriverConnect: {08001} [Microsoft][ODBC SQL Server Driver][DBNETLIB]SQL Server 不存在或访问被拒绝
+{01000} [Microsoft][ODBC SQL Server Driver][DBNETLIB]ConnectionOpen (Connect()).
+{01S00} [Microsoft][ODBC SQL Server Driver]无效的连接字符串属性]
+
+[INFO] 21:07:25.580326 [客户端断开连接: 192.168.1.2:50116 ,原因: read tcp 192.168.1.2:496->192.168.1.2:50116: wsarecv: An existing connection was forcibly closed by the remote host.]
+
+=========================== [2019-09-02] ===========================
+
+[ERRS] 21:10:28.528136 [odbc init err: SQLDriverConnect: {08001} [Microsoft][ODBC SQL Server Driver][DBNETLIB]SQL Server 不存在或访问被拒绝
+{01000} [Microsoft][ODBC SQL Server Driver][DBNETLIB]ConnectionOpen (Connect()).
+{01S00} [Microsoft][ODBC SQL Server Driver]无效的连接字符串属性]
+
+=========================== [2019-09-02] ===========================
+
+[INFO] 21:12:49.472177 [Collect Online!]
+

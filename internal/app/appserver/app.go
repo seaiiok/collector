@@ -40,6 +40,7 @@ func (this *app) Run(ctx context.Context, cancel context.CancelFunc) {
 		err := gdb.New("odbc", dsn)
 		if err != nil {
 			this.log.Error("odbc init err:", err)
+			panic(1)
 		}
 	})
 
