@@ -1,6 +1,7 @@
 package fileparse
 
 import (
+	"context"
 	"fmt"
 	"gcom/gtools/gdb"
 	"testing"
@@ -27,8 +28,8 @@ func TestFile(t *testing.T) {
 	gdb.Exec(sql_createtable3)
 
 	time.Sleep(time.Second)
-	err = Run()
 
-	t.Log(err)
+	ctx, _ := context.WithCancel(context.Background())
 
+	Run(ctx, "./read-pool")
 }
