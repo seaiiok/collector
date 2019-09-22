@@ -19,7 +19,7 @@ const (
 	`
 
 	sql_notfinishfile = `
-	SELECT top 1 FID,FMd5,FProgress FROM [iFixsvr_JF_Files] WHERE FFinish ='0'
+	SELECT FID,FMd5,FProgress FROM [iFixsvr_JF_Files] WHERE FFinish ='0'
 	 `
 
 	sql_updateprogress = `
