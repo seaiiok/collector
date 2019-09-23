@@ -11,6 +11,8 @@ import (
 const (
 	icount   = 5000
 	finished = "file finished"
+	MAXFILES = 100
+	MAXINFOS = 5000
 )
 
 type files struct {
@@ -23,17 +25,29 @@ type infos struct {
 	id string
 }
 
-type msg struct {
-	filesMsg  chan files
-	filesInfo chan infos
-}
+var filesChan = make(chan files, MAXFILES)
+var infosChan = make(chan infos, MAXINFOS)
 
 func Run() {
 
 }
 
 func run() {
-
+	fs := make([]files, 0)
+	for {
+		select {
+		default:
+			if len(filesChan) == 0 && len(infosChan) == 0 {
+				fs, _ = getFilesName()
+				for _, v := range fs {
+					if len(filesChan) >= MAXFILES {
+						break
+					}
+					filesChan <- v
+				}
+			}
+		}
+	}
 }
 
 //获取数据库未完成的文件信息
